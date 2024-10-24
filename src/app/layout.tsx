@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
+import type { Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+
+import NavBar from "@/components/navbar";
+import { siteConfig } from "@/config/site";
+import { ThemeProvider } from "next-themes";
+import { cn } from "@/lib/utils";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,8 +20,18 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "NourishNetwork",
-  description: "Connecting People In Need",
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
 };
 
 export default function RootLayout({
@@ -26,9 +42,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          geistSans.variable,
+          geistMono.variable,
+        )}
       >
-        {children}
+        <div className="font-[family-name:var(--font-geist-sans)]">
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="relative flex min-h-screen flex-col">
+              <NavBar />
+              <div className="mx-auto flex-1">{children}</div>
+            </div>
+          </ThemeProvider>
+        </div>
       </body>
     </html>
   );
