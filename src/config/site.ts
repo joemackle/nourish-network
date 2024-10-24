@@ -12,8 +12,8 @@ export const siteConfig = {
       href: "/",
     },
     {
-      title: "Events",
-      href: "/events",
+      title: "Search",
+      href: "/search",
     },
     {
       title: "Profile",
