@@ -15,17 +15,11 @@ export default function Home() {
         </p>
       </div>
       <div className="flex gap-4">
-        <Link
-          href="/register"
-          target="_blank"
-          rel="noreferrer"
-          className={buttonVariants()}
-        >
+        <Link href="/register" rel="noreferrer" className={buttonVariants()}>
           Get Started
         </Link>
         <Link
           href="/login"
-          target="_blank"
           rel="noreferrer"
           className={buttonVariants({ variant: "outline" })}
         >
