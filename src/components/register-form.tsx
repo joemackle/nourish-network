@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface RegisterFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+type RegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function RegisterForm({ className, ...props }: RegisterFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
