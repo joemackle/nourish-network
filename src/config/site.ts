@@ -1,6 +1,5 @@
 export const siteConfig = {
   name: "NourishNetwork",
-  url: "https://acme.com",
   description:
     "Connecting people in need with local food events. We bridge the gap between surplus and scarcity.",
   links: {
