@@ -7,7 +7,7 @@ A basic Node.js application that allows users to register and log in, with passw
 ### Setup and Run
 
 # 1. Change Directory
-    ```bash
+   ```bash
    cd ...idk what im doing
    ```  
 
