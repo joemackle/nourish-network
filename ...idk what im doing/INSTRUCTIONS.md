@@ -21,28 +21,35 @@ A basic Node.js application that allows users to register and log in, with passw
    node server.js
    ```
 
-4. **Access SQLite Database**
-   - Navigate to the `db` folder:
+4. **View Data in HTML Format**
    ```bash
-   cd db
+   "Go to http://localhost:3000/view-db while server is running"
    ```
 
-   - Open the database:
+5. **Close the Server**
    ```bash
-   sqlite3 users.db
+   "Ctrl + C"
    ```
 
-   - View the stored users:
+6. **Access SQLite Database**
+   
+   # Open SQLite command line
+   ```sql
+   sqlite3 ./db/users.db
+   ```
+
+   # To make it prettier, first type:
+   ```sql
+   .mode column
+   .headers on
+   ```
+
+   # Then again:
    ```sql
    SELECT * FROM users;
    ```
 
-   - Exit SQLite:
+   # To exit:
    ```sql
    .exit
-   ```
-
-3. **Close the Server**
-   ```bash
-   "Ctrl + C"
    ```

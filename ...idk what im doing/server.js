@@ -14,8 +14,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 const db = new sqlite3.Database('./db/users.db');
 
 db.serialize(() => {
-    // Create the users table if it does not already exist
-    db.run("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)", (err) => {
+    // Create the users table with email field and unique constraints
+    db.run(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            email TEXT UNIQUE,
+            password TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `, (err) => {
         if (err) {
             console.error("Error creating table:", err.message);
         } else {
@@ -24,33 +32,113 @@ db.serialize(() => {
     });
 });
 
+// View all users endpoint - Access this in browser at http://localhost:3000/view-db
+app.get('/view-db', (req, res) => {
+    db.all("SELECT id, username, email, created_at FROM users", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        // Send response as formatted HTML
+        let html = '<h2>Database Contents</h2>';
+        html += '<table border="1" style="border-collapse: collapse; margin: 20px;">';
+        html += '<tr><th>ID</th><th>Username</th><th>Email</th><th>Created At</th></tr>';
+        
+        rows.forEach(row => {
+            html += `<tr>
+                <td style="padding: 8px;">${row.id}</td>
+                <td style="padding: 8px;">${row.username}</td>
+                <td style="padding: 8px;">${row.email}</td>
+                <td style="padding: 8px;">${row.created_at}</td>
+            </tr>`;
+        });
+        
+        html += '</table>';
+        html += `<p>Total Users: ${rows.length}</p>`;
+        
+        res.send(html);
+    });
+});
 
 // Registration endpoint
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    db.run("INSERT INTO users (username, password) VALUES (?, ?)", [username, hashedPassword], (err) => {
-        if (err) return res.status(500).send("Error registering user.");
-        res.status(201).send("User registered successfully.");
-    });
+    try {
+        const { username, email, password } = req.body;
+
+        // Input validation
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        // Insert new user
+        db.run(
+            "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+            [username, email, hashedPassword],
+            (err) => {
+                if (err) {
+                    console.error("Registration error:", err);
+                    return res.status(500).json({ message: "Error registering user" });
+                }
+                res.status(201).json({ message: "User registered successfully" });
+            }
+        );
+    } catch (error) {
+        console.error("Server error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 // Login endpoint
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    db.get("SELECT * FROM users WHERE username = ?", [username], async (err, user) => {
-        if (err || !user) return res.status(400).send("User not found.");
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (isMatch) {
-            const token = jwt.sign({ username }, 'secret_key');
-            res.json({ token });
-        } else {
-            res.status(401).send("Invalid credentials.");
+    const { usernameOrEmail, password } = req.body;
+
+    const query = "SELECT * FROM users WHERE username = ? OR email = ?";
+    
+    db.get(query, [usernameOrEmail, usernameOrEmail], async (err, user) => {
+        try {
+            if (err) {
+                return res.status(500).json({ message: "Internal server error" });
+            }
+
+            if (!user) {
+                return res.status(400).json({ message: "User not found" });
+            }
+
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(401).json({ message: "Invalid credentials" });
+            }
+
+            const token = jwt.sign(
+                { userId: user.id, username: user.username },
+                'your_jwt_secret',
+                { expiresIn: '24h' }
+            );
+
+            res.json({ token, user: { username: user.username, email: user.email } });
+        } catch (error) {
+            console.error("Login error:", error);
+            res.status(500).json({ message: "Internal server error" });
         }
     });
 });
 
-// Serve HTML file on root route
+// JSON view of database - Access this at http://localhost:3000/api/users
+app.get('/api/users', (req, res) => {
+    db.all("SELECT id, username, email, created_at FROM users", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({
+            user_count: rows.length,
+            users: rows
+        });
+    });
+});
+
+// Serve HTML file
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
