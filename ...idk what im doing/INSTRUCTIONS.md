@@ -6,50 +6,49 @@ A basic Node.js application that allows users to register and log in, with passw
 
 ### Setup and Run
 
-1. **Change Directory**
+1. # Change Directory
     ```bash
    cd ...idk what im doing
    ```  
 
-2. **Install Dependencies**
+2. # Install Dependencies
    ```bash
    npm install express bcryptjs jsonwebtoken sqlite3
    ```
 
-3. **Run the Server**
+3. # Run the Server
    ```bash
    node server.js
    ```
 
-4. **View Data in HTML Format**
-   ```bash
-   Go to http://localhost:3000/view-db while server is running.
-   ```
+4. # View Data in HTML Format
+   - Go to [http://localhost:3000/view-db](http://localhost:3000/view-db) while the server is running.
 
-5. **Close the Server**
+
+5. # Close the Server
    ```bash
    Press "Ctrl + C"
    ```
 
-6. **Access SQLite Database**
+6. # Access SQLite Database
    
-   # Open SQLite command line
+   **Open SQLite command line**
    ```bash
    sqlite3 ./db/users.db
    ```
 
-   # To make it prettier, first type:
+   **To make it prettier, first type:**
    ```bash
    .mode column
    .headers on
    ```
 
-   # Then again:
+   **Then again:**
    ```bash
    SELECT * FROM users;
    ```
 
-   # To exit:
+   **To exit:**
    ```bash
    .exit
    ```
