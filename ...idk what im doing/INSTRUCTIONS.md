@@ -23,12 +23,12 @@ A basic Node.js application that allows users to register and log in, with passw
 
 4. **View Data in HTML Format**
    ```bash
-   "Go to http://localhost:3000/view-db while server is running"
+   Go to http://localhost:3000/view-db while server is running.
    ```
 
 5. **Close the Server**
    ```bash
-   "Ctrl + C"
+   Press "Ctrl + C"
    ```
 
 6. **Access SQLite Database**
