@@ -34,22 +34,22 @@ A basic Node.js application that allows users to register and log in, with passw
 6. **Access SQLite Database**
    
    # Open SQLite command line
-   ```sql
+   ```bash
    sqlite3 ./db/users.db
    ```
 
    # To make it prettier, first type:
-   ```sql
+   ```bash
    .mode column
    .headers on
    ```
 
    # Then again:
-   ```sql
+   ```bash
    SELECT * FROM users;
    ```
 
    # To exit:
-   ```sql
+   ```bash
    .exit
    ```
