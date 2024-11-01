@@ -6,25 +6,25 @@ A basic Node.js application that allows users to register and log in, with passw
 
 ### Setup and Run
 
-1. # Change Directory
+# 1. Change Directory
     ```bash
    cd ...idk what im doing
    ```  
 
-2. # Install Dependencies
+# 2. Install Dependencies
    ```bash
    npm install express bcryptjs jsonwebtoken sqlite3
    ```
 
-3. # Run the Server
+# 3. Run the Server
    ```bash
    node server.js
    ```
 
-4. # View Data in HTML Format
+# 4. View Data in HTML Format
    - Go to [http://localhost:3000/view-db](http://localhost:3000/view-db) while the server is running.
 
-8. # Test User Server Authentication
+# 5. Test User Server Authentication
 
    **Get Token**
    - Login with a registered user and copy down the token.
@@ -66,12 +66,12 @@ A basic Node.js application that allows users to register and log in, with passw
       user: {userId: 2, username: 'test_user_2', iat: 4856490336, exp: 4856 ...
    ```
 
-6. # Close the Server
+# 6. Close the Server
    ```bash
    Press "Ctrl + C"
    ```
 
-7. # Access SQLite Database
+# 7. Access SQLite Database
    
    **Open SQLite command line**
    ```bash
