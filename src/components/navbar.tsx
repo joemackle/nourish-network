@@ -1,14 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useSession, signOut, SessionProvider } from "next-auth/react";
 
 import { siteConfig } from "@/config/site";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { MainNav } from "@/components/main-nav";
 import ThemeToggle from "@/components/theme-toggle";
 
 export default function NavBar() {
+  return (
+    <SessionProvider>
+      <HeaderContent />
+    </SessionProvider>
+  );
+}
+
+function HeaderContent() {
+  const { data: session } = useSession();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
@@ -31,6 +42,7 @@ export default function NavBar() {
               </div>
             </Link>
             <ThemeToggle />
+            {session && <Button onClick={() => signOut()}>Sign Out</Button>}
           </nav>
         </div>
       </div>
