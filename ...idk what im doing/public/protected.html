@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protected Route</title>
+    <script>
+        async function accessProtected() {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:3000/protected', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert('Protected data: ' + JSON.stringify(data));
+            } else {
+                const errorData = await response.json();
+                alert('Access denied: ' + errorData.message);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Access Protected Route</h2>
+    <button onclick="accessProtected()">Get Protected Data</button>
+</body>
+</html>
