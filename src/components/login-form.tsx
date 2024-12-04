@@ -1,19 +1,21 @@
 "use client";
 
 import * as React from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authenticate } from "@/lib/actions";
 
 type LoginFormProps = React.HTMLAttributes<HTMLDivElement>;
 
 export function LoginForm({ className, ...props }: LoginFormProps) {
-  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = React.useState<string | null>("");
   const [isLoading, setIsLoading] = React.useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,9 +27,19 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
     const password = formData.get("password") as string;
 
     try {
-      await authenticate(email, password); // assuming authenticate is a promise-based function
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        setErrorMsg("Invalid email or password. Please try again.");
+      } else if (result?.ok) {
+        router.push("/profile");
+      }
     } catch (error) {
-      setErrorMsg("Failed to sign in. Please try again.");
+      setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -41,31 +53,35 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="email"
               placeholder="you@example.com"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
               disabled={isLoading}
+              required={true}
             />
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              name="password"
               placeholder="••••••••"
               type="password"
               autoCapitalize="none"
-              autoComplete="off"
+              autoComplete="current-password"
               autoCorrect="off"
               disabled={isLoading}
+              required={true}
             />
           </div>
-          <Button disabled={isLoading}>
+          <Button type="submit" disabled={isLoading}>
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
             Sign In
           </Button>
-          <div className="flex h-8 items-end space-x-1">
+          <div className="flex h-8 items-end space-x-1" aria-live="assertive">
             {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
           </div>
         </div>
