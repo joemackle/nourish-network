@@ -1,17 +1,28 @@
-import React from "react";
+//import { getProfile } from '@/components/get-profile'
+import { getServerUser } from "@/lib/getServerUser";
 
-interface ProfilesPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
-}
+/*export async function generateMetadata({ params }: { params: { username: string } }) {
+  const profile = await getProfile(params.username);
+  return {
+    title: profile?.name || 'NourishNetwork',
+  };
+}*/
 
-export default function ProfilesPage({ searchParams }: ProfilesPageProps) {
-  const username = Array.isArray(searchParams.username)
-    ? searchParams.username[0]
-    : searchParams.username || "User";
+export default async function Page() {
+  const [user] = await getServerUser();
+  //const profile = await getProfile(params.username);
+  //const isLoggedIn = user?.id === profile?.id;
 
   return (
     <div>
-      <h1>Welcome back {username}!</h1>
+      {user && (
+        <div className="mt-4">
+          {user.username}
+          {user.email}
+          {user.id}
+          {user.group}
+        </div>
+      )}
     </div>
   );
 }
