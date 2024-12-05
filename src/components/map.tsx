@@ -15,52 +15,27 @@ const defaultMapOptions = {
 };
 
 const MapComponent = ({ zip }: { zip: string }) => {
-  const [center, setCenter] = useState({ lat: 35.8799866, lng: 76.5048004 });
-  const [markers, setMarkers] = useState([]);
+  const [center, setCenter] = useState({ lat: 29.6111, lng: -82.3722 }); // Center to Gainesville, FL (32608 region)
   const [error, setError] = useState<string | null>(null);
   const zoomLevel = 12;
 
+  // Hardcoded markers in the 32608 region
+  const hardcodedMarkers = [
+    { lat: 29.6185, lng: -82.3771, name: "Gainesville Community Pantry" },
+    { lat: 29.6059, lng: -82.3556, name: "Bread of the Mighty Food Bank" },
+    { lat: 29.6197, lng: -82.3412, name: "St. Francis House" },
+    { lat: 29.6334, lng: -82.3729, name: "Grace Marketplace" },
+    { lat: 29.6024, lng: -82.3806, name: "Catholic Charities Bureau" },
+  ];
+
   useEffect(() => {
-    const fetchCoordinatesAndPantries = async () => {
-      if (!zip.match(/^\d{5}$/)) {
-        setError("Please enter a valid 5-digit ZIP code.");
-        return;
-      }
-
-      setError(null); // Reset error message
-      try {
-        // Fetch geocoding data
-        const geoResponse = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API}`,
-        );
-        const geoData = await geoResponse.json();
-
-        if (geoData.results && geoData.results.length > 0) {
-          const location = geoData.results[0].geometry.location;
-          setCenter(location); // Update map center with the ZIP code's location
-
-          // Fetch nearby pantries
-          const pantriesResponse = await fetch(
-            `/api/pantries?lat=${location.lat}&lng=${location.lng}`,
-          );
-          const pantries = await pantriesResponse.json();
-
-          // Update markers state
-          setMarkers(pantries);
-
-          if (pantries.length === 0) {
-            setError("No food pantries found near this ZIP code.");
-          }
-        } else {
-          setError("Invalid ZIP code. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError("");
-      }
-    };
-
-    fetchCoordinatesAndPantries();
+    if (zip.match(/^\d{5}$/)) {
+      setError(null);
+      // In this example, we are hardcoding the map center to 32608 area
+      setCenter({ lat: 29.6111, lng: -82.3722 });
+    } else if (zip.length > 0) {
+      setError("Please enter a valid 5-digit ZIP code.");
+    }
   }, [zip]);
 
   return (
@@ -73,12 +48,15 @@ const MapComponent = ({ zip }: { zip: string }) => {
           zoom={zoomLevel}
           options={defaultMapOptions}
         >
-          {/* Render markers */}
-          {markers.map((pantry, index) => (
+          {/* Render hardcoded markers */}
+          {hardcodedMarkers.map((pantry, index) => (
             <Marker
               key={index}
               position={{ lat: pantry.lat, lng: pantry.lng }}
               title={pantry.name}
+              icon={{
+                url: "http://maps.google.com/mapfiles/ms/icons/red-pushpin.png",
+              }}
             />
           ))}
         </GoogleMap>
