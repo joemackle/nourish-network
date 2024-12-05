@@ -6,12 +6,12 @@ export async function POST(request: Request) {
   const body = await request.json();
   console.log("Request body:", body);
 
-  const { email, username, password, group } = body;
+  const { email, username, password, group, zipCode } = body;
   console.log("Plaintext password as received:", password);
 
   if (!email || !username || !password || !group) {
     return NextResponse.json(
-      { success: false, message: "All fields are required" },
+      { success: false, message: "Fields are required" },
       { status: 400 },
     );
   }
@@ -36,6 +36,7 @@ export async function POST(request: Request) {
         username,
         password: hashedPassword,
         group: group.toUpperCase() as "DONOR" | "RECIPIENT",
+        zipCode: zipCode || "32601",
       },
     });
 

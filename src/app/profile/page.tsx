@@ -1,5 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import prisma from "@/lib/prisma";
+import ZipCodeForm from "@/components/ZipCodeForm";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -13,7 +15,24 @@ export default async function ProfilePage() {
     );
   }
 
-  const { user } = session;
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      email: true,
+      username: true,
+      group: true,
+      zipCode: true,
+    },
+  });
+
+  if (!user) {
+    return (
+      <div className="container mx-auto mt-4">
+        <h1 className="text-2xl font-bold">Profile</h1>
+        <p>Unable to load your profile data. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto mt-4">
@@ -28,6 +47,10 @@ export default async function ProfilePage() {
         <p>
           <strong>Group:</strong> {user.group}
         </p>
+        <p>
+          <strong>Zip Code:</strong> {user.zipCode || "Not set"}
+        </p>
+        <ZipCodeForm userId={session.user.id} />
       </div>
     </div>
   );

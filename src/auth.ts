@@ -22,6 +22,14 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials?.email.toLowerCase() },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            group: true,
+            zipCode: true,
+            password: true,
+          },
         });
         //console.log("User fetched:", user);
 
@@ -48,6 +56,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           username: user.username,
           group: user.group,
+          zipCode: user.zipCode,
         };
       },
     }),
@@ -62,6 +71,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.username = user.username;
         token.group = user.group;
+        token.zipCode = user.zipCode;
       }
       return token;
     },
@@ -72,6 +82,7 @@ export const authOptions: NextAuthOptions = {
           email: token.email as string,
           username: token.username as string,
           group: token.group as string,
+          zipCode: token.zipCode as string,
         };
       }
       return session;

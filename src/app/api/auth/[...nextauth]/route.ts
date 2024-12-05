@@ -32,6 +32,14 @@ export const authOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email.toLowerCase() },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            group: true,
+            zipCode: true,
+            password: true,
+          },
         });
         console.log("User fetched:", user);
 
@@ -60,6 +68,7 @@ export const authOptions = {
           email: user.email,
           username: user.username,
           group: user.group,
+          zipCode: user.zipCode || "32601",
         };
       },
     }),
@@ -76,6 +85,7 @@ export const authOptions = {
         token.id = user.id;
         token.group = user.group;
         token.username = user.username;
+        token.zipCode = user.zipCode;
       }
       return token;
     },
@@ -85,6 +95,7 @@ export const authOptions = {
           id: token.id as string,
           group: token.group as string,
           username: token.username as string,
+          zipCode: token.zipCode as string,
           email: session.user?.email || null,
           name: session.user?.name || null,
           image: session.user?.image || null,

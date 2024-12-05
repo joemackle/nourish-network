@@ -27,6 +27,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirm-password") as string;
     const group = formData.get("group") as string; // recipient / donor
+    const zipCode = formData.get("zipCode") as string;
 
     if (password !== confirmPassword) {
       setErrorMsg("Passwords do not match.");
@@ -41,7 +42,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password, group }),
+        body: JSON.stringify({ email, username, password, group, zipCode }),
       });
 
       if (!res.ok) {
@@ -109,6 +110,16 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
               type="password"
               autoCapitalize="none"
               autoComplete="off"
+              autoCorrect="off"
+              disabled={isLoading}
+            />
+            <Label htmlFor="zipCode">Zip Code</Label>
+            <Input
+              id="zipCode"
+              name="zipCode"
+              placeholder="Enter your zip code"
+              type="text"
+              autoComplete="postal-code"
               autoCorrect="off"
               disabled={isLoading}
             />
