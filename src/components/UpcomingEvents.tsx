@@ -1,10 +1,13 @@
 import React from "react";
 
-export default async function UpcomingEvents({ userId }: { userId: string }) {
-  // Fetch events from your API or database based on userId or zip code
-  const events = await fetch(`/api/events?userId=${userId}`).then((res) =>
-    res.json(),
-  );
+export default async function UpcomingEvents({ zipCode }: { zipCode: string }) {
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"; // localhost fallback
+  const apiUrl = `${baseUrl}/api/events?zipCode=${zipCode}`;
+
+  // fetch events based on zip code
+  //console.log("Fetching events from:", apiUrl);
+  const events = await fetch(apiUrl).then((res) => res.json());
+  //console.log("Fetched events:", events);
 
   if (!events || events.length === 0) {
     return <p>No upcoming events found.</p>;
@@ -17,7 +20,7 @@ export default async function UpcomingEvents({ userId }: { userId: string }) {
         {events.map((event: any) => (
           <li key={event.id} className="rounded border p-2 shadow-sm">
             <p className="font-semibold">{event.name}</p>
-            <p>{event.date}</p>
+            <p>{new Date(event.date).toLocaleDateString()}</p>
             <p>{event.location}</p>
           </li>
         ))}

@@ -20,6 +20,7 @@ export default function ZipCodeForm({ userId }: { userId: string }) {
       }
 
       alert("Zip code updated: " + zipCode);
+      window.location.reload();
     } catch (error) {
       console.error(error);
       alert("Failed to update zip code");

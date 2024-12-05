@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
+import prisma from "@/lib/prisma";
 import UpcomingEvents from "@/components/UpcomingEvents";
 import FavoritedPantries from "@/components/FavoritedPantries";
 import HelpfulResources from "@/components/HelpfulResources";
@@ -38,12 +39,37 @@ export default async function Home() {
     );
   }
 
+  // fetch latest user data
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      email: true,
+      username: true,
+      group: true,
+      zipCode: true,
+    },
+  });
+
+  if (!user) {
+    return (
+      <div className="container mx-auto mt-4">
+        <p>Unable to load your profile data. Please try again later.</p>
+      </div>
+    );
+  }
+
   // logged-in view
+  console.log(
+    "SessionUser " + session.user.username + " session zip code:",
+    session.user.zipCode,
+  );
+  console.log("User " + user.username + " zip code:", user.zipCode);
   return (
     <section className="container grid grid-cols-2 gap-4 p-4">
+      <h1>Welcome, {user.username}!</h1>
       {/* Upcoming Event Listings (2 rows) */}
       <div className="col-span-1 row-span-2 border p-4 shadow-sm">
-        {/*<UpcomingEvents userId={session.user.id} />*/}
+        <UpcomingEvents zipCode={user.zipCode || "32601"} />
       </div>
 
       {/* Favorited Pantries */}
