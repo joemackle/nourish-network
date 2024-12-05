@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
@@ -31,21 +29,23 @@ const MapComponent = ({ zip }: { zip: string }) => {
 
       setError(null); // Reset error message
       try {
-        // Fetch geocoding data for the ZIP code
+        // Fetch geocoding data
         const geoResponse = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API}`,
         );
         const geoData = await geoResponse.json();
 
         if (geoData.results && geoData.results.length > 0) {
           const location = geoData.results[0].geometry.location;
-          setCenter(location);
+          setCenter(location); // Update map center with the ZIP code's location
 
-          // Fetch food pantries near the location
+          // Fetch nearby pantries
           const pantriesResponse = await fetch(
             `/api/pantries?lat=${location.lat}&lng=${location.lng}`,
           );
           const pantries = await pantriesResponse.json();
+
+          // Update markers state
           setMarkers(pantries);
 
           if (pantries.length === 0) {
@@ -56,7 +56,7 @@ const MapComponent = ({ zip }: { zip: string }) => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError("Something went wrong. Please try again.");
+        setError("");
       }
     };
 
@@ -66,15 +66,14 @@ const MapComponent = ({ zip }: { zip: string }) => {
   return (
     <div>
       {error && <p className="text-red-500">{error}</p>}
-      <LoadScript
-        googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-      >
+      <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API}>
         <GoogleMap
           mapContainerStyle={defaultMapContainerStyle}
           center={center}
           zoom={zoomLevel}
           options={defaultMapOptions}
         >
+          {/* Render markers */}
           {markers.map((pantry, index) => (
             <Marker
               key={index}

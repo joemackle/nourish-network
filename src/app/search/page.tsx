@@ -22,6 +22,7 @@ export default function Page() {
           onChange={(e) => setZip(e.target.value)}
         />
       </div>
+
       <div className="w-3/4 justify-self-center">
         <MapComponent zip={zip} />
       </div>
