@@ -66,7 +66,10 @@ export default async function Home() {
   console.log("User " + user.username + " zip code:", user.zipCode);
   return (
     <section className="container grid grid-cols-2 gap-4 p-4">
-      <h1>Welcome, {user.username}!</h1>
+      {/* Title */}
+      <div className="col-span-2 flex items-center justify-center">
+        <h1 className="text-2xl font-bold">Welcome, {user.username}!</h1>
+      </div>
       {/* Upcoming Event Listings (2 rows) */}
       <div className="col-span-1 row-span-2 border p-4 shadow-sm">
         <UpcomingEvents zipCode={user.zipCode || "32601"} />
@@ -74,6 +77,7 @@ export default async function Home() {
 
       {/* Favorited Pantries */}
       <div className="col-span-1 row-span-1 border p-4 shadow-sm">
+        <p className="text-xl font-bold">Favorited Pantries</p>
         {/*<FavoritedPantries userId={session.user.id} />*/}
       </div>
 
