@@ -1,4 +1,4 @@
-import "server-only";
+/*import "server-only";
 import { auth } from "@/auth";
 
 export async function getServerUser() {
@@ -6,3 +6,4 @@ export async function getServerUser() {
   const user = session?.user;
   return [user];
 }
+*/

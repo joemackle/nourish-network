@@ -1,28 +1,34 @@
-//import { getProfile } from '@/components/get-profile'
-import { getServerUser } from "@/lib/getServerUser";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 
-/*export async function generateMetadata({ params }: { params: { username: string } }) {
-  const profile = await getProfile(params.username);
-  return {
-    title: profile?.name || 'NourishNetwork',
-  };
-}*/
+export default async function ProfilePage() {
+  const session = await getServerSession(authOptions);
 
-export default async function Page() {
-  const [user] = await getServerUser();
-  //const profile = await getProfile(params.username);
-  //const isLoggedIn = user?.id === profile?.id;
+  if (!session) {
+    return (
+      <div className="container mx-auto mt-4">
+        <h1 className="text-2xl font-bold">Profile</h1>
+        <p>You are not logged in. Please log in to view your profile.</p>
+      </div>
+    );
+  }
+
+  const { user } = session;
 
   return (
-    <div>
-      {user && (
-        <div className="mt-4">
-          {user.username}
-          {user.email}
-          {user.id}
-          {user.group}
-        </div>
-      )}
+    <div className="container mx-auto mt-4">
+      <h1 className="text-2xl font-bold">Profile</h1>
+      <div className="mt-4">
+        <p>
+          <strong>Email:</strong> {user.email}
+        </p>
+        <p>
+          <strong>Username:</strong> {user.username}
+        </p>
+        <p>
+          <strong>Group:</strong> {user.group}
+        </p>
+      </div>
     </div>
   );
 }

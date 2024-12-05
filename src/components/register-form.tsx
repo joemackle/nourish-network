@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { signIn } from "next-auth/react";
+import bcrypt from "bcryptjs";
 
 type RegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -22,11 +23,42 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
 
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
+    const username = formData.get("username") as string;
     const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirm-password") as string;
+    const group = formData.get("group") as string; // recipient / donor
 
-    // hash password
-    // add new user to the database
-    // sign in to new user account
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    console.log("Submitted password:", password);
+
+    try {
+      // add new user to the database
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, username, password, group }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Something went wrong");
+      }
+
+      // sign in to new user account (handled server-side)
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = "/profile"; // redirect
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -37,6 +69,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="email"
               placeholder="you@example.com"
               type="email"
               autoCapitalize="none"
@@ -47,8 +80,11 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
+              name="username"
               placeholder="Username"
-              type="email"
+              type="text"
+              required
+              pattern="[A-Za-z0-9_]+"
               autoCapitalize="none"
               autoComplete="off"
               autoCorrect="off"
@@ -57,6 +93,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
+              name="password"
               placeholder="••••••••"
               type="password"
               autoCapitalize="none"
@@ -67,6 +104,7 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
             <Label htmlFor="confirm-password">Confirm Password</Label>
             <Input
               id="confirm-password"
+              name="confirm-password"
               placeholder="••••••••"
               type="password"
               autoCapitalize="none"
@@ -74,13 +112,13 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
               autoCorrect="off"
               disabled={isLoading}
             />
-            <RadioGroup defaultValue="Recipient">
+            <RadioGroup id="group" name="group" defaultValue="RECIPIENT">
               <div className="spaxe-x-2 flex items-center">
-                <RadioGroupItem value="Recipient" id="r1" />
+                <RadioGroupItem value="RECIPIENT" id="r1" />
                 <Label htmlFor="r1">Recipient</Label>
               </div>
               <div className="spaxe-x-2 flex items-center">
-                <RadioGroupItem value="Donor" id="r2" />
+                <RadioGroupItem value="DONOR" id="r2" />
                 <Label htmlFor="r2">Donor</Label>
               </div>
             </RadioGroup>

@@ -32,6 +32,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         email,
         password,
       });
+      console.log("Sign-in result:", result);
 
       if (result?.error) {
         setErrorMsg("Invalid email or password. Please try again.");
@@ -39,6 +40,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         router.push("/profile");
       }
     } catch (error) {
+      console.log("Sign-in error:", error);
       setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
