@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
+interface MarkerData {
+  lat: number;
+  lng: number;
+  name: string;
+}
+
 const defaultMapContainerStyle = {
   width: "100%",
   height: "80vh",
@@ -16,7 +22,8 @@ const defaultMapOptions = {
 
 const MapComponent = ({ zip }: { zip: string }) => {
   const [center, setCenter] = useState({ lat: 35.8799866, lng: 76.5048004 });
-  const [markers, setMarkers] = useState([]);
+  const [markers, setMarkers] = useState<MarkerData[]>([]);
+  //const [markers, setMarkers] = useState([]);
   const [error, setError] = useState<string | null>(null);
   const zoomLevel = 12;
 
@@ -66,23 +73,27 @@ const MapComponent = ({ zip }: { zip: string }) => {
   return (
     <div>
       {error && <p className="text-red-500">{error}</p>}
-      <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API}>
-        <GoogleMap
-          mapContainerStyle={defaultMapContainerStyle}
-          center={center}
-          zoom={zoomLevel}
-          options={defaultMapOptions}
-        >
-          {/* Render markers */}
-          {markers.map((pantry, index) => (
-            <Marker
-              key={index}
-              position={{ lat: pantry.lat, lng: pantry.lng }}
-              title={pantry.name}
-            />
-          ))}
-        </GoogleMap>
-      </LoadScript>
+      {process.env.NEXT_PUBLIC_GOOGLE_MAP_API ? (
+        <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API}>
+          <GoogleMap
+            mapContainerStyle={defaultMapContainerStyle}
+            center={center}
+            zoom={zoomLevel}
+            options={defaultMapOptions}
+          >
+            {/* Render markers */}
+            {markers.map((pantry: MarkerData, index) => (
+              <Marker
+                key={index}
+                position={{ lat: pantry.lat, lng: pantry.lng }}
+                title={pantry.name}
+              />
+            ))}
+          </GoogleMap>
+        </LoadScript>
+      ) : (
+        <p className="text-red-500">Google Maps API key is missing.</p>
+      )}
     </div>
   );
 };

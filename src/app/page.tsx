@@ -1,8 +1,8 @@
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
 import prisma from "@/lib/prisma";
 import UpcomingEvents from "@/components/UpcomingEvents";
-import FavoritedPantries from "@/components/FavoritedPantries";
+//import FavoritedPantries from "@/components/FavoritedPantries";
 import HelpfulResources from "@/components/HelpfulResources";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";

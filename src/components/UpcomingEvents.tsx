@@ -1,5 +1,12 @@
 import React from "react";
 
+interface Event {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+}
+
 export default async function UpcomingEvents({ zipCode }: { zipCode: string }) {
   const env = process.env.NODE_ENV;
   const baseUrl =
@@ -21,7 +28,7 @@ export default async function UpcomingEvents({ zipCode }: { zipCode: string }) {
     <div>
       <h2 className="text-xl font-bold">Upcoming Events</h2>
       <ul className="mt-2 space-y-2">
-        {events.map((event: any) => (
+        {events.map((event: Event) => (
           <li key={event.id} className="rounded border p-2 shadow-sm">
             <p className="font-semibold">{event.name}</p>
             <p>{new Date(event.date).toLocaleDateString()}</p>
