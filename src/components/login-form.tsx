@@ -37,13 +37,16 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
       if (result?.error) {
         setErrorMsg("Invalid email or password. Please try again.");
       } else if (result?.ok) {
-        router.push("/profile");
+        alert("Successfully logged in");
+        window.location.reload();
+        window.location.href = "/"; //router.push("/profile");
       }
     } catch (error) {
       console.log("Sign-in error:", error);
       setErrorMsg("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
+      router.push("/");
     }
   };
 
