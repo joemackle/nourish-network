@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           username: user.username,
           group: user.group,
-          zipCode: user.zipCode,
+          zipCode: user.zipCode || undefined,
         };
       },
     }),

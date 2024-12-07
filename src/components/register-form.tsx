@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { signIn } from "next-auth/react";
-import bcrypt from "bcryptjs";
+// import { signIn } from "next-auth/react";
+// import bcrypt from "bcryptjs";
 
 type RegisterFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -55,8 +55,12 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
       if (data.success) {
         window.location.href = "/profile"; // redirect
       }
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMsg(err.message);
+      } else {
+        setErrorMsg("An unexpected error occurred");
+      }
     } finally {
       setIsLoading(false);
     }

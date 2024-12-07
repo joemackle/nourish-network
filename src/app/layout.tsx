@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
+//import { SessionProvider } from "next-auth/react";
 import NavBar from "@/components/navbar";
 import { siteConfig } from "@/config/site";
 import { ThemeProvider } from "next-themes";

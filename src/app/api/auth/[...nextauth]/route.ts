@@ -1,11 +1,12 @@
-import NextAuth, { SessionStrategy } from "next-auth";
-import { Session } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import NextAuth, { Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import bcryptjs from "bcryptjs";
+import { JWT } from "next-auth/jwt";
+import { User } from "@prisma/client";
 
-export const authOptions = {
+// Define your options inline
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -13,16 +14,10 @@ export const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(
-        credentials: Record<"email" | "password", string> | undefined,
-      ) {
-        //async authorize(credentials) {
-        console.log("Authorized called with ", credentials);
-        if (!credentials) throw new Error("Missing credentials");
-
-        // if (!credentials?.email || !credentials?.password) {
-        //   throw new Error("Missing email or password");
-        // }
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing email or password");
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email.toLowerCase() },
@@ -35,27 +30,15 @@ export const authOptions = {
             password: true,
           },
         });
-        console.log("User fetched:", user);
 
-        if (!user) {
-          console.error("User not found");
-          throw new Error("Invalid email or password");
-        }
+        if (!user) throw new Error("Invalid email or password");
 
-        console.log(
-          'Plaintext password during login: "' + credentials.password + '"',
-        );
-        console.log("Hashed password from DB:", user.password);
         const isPasswordValid = await bcryptjs.compare(
           credentials.password,
           user.password,
         );
-        console.log("Password valid:", isPasswordValid);
 
-        if (!isPasswordValid) {
-          console.error("Invalid password");
-          throw new Error("Invalid email or password");
-        }
+        if (!isPasswordValid) throw new Error("Invalid email or password");
 
         return {
           id: user.id,
@@ -67,14 +50,17 @@ export const authOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: "/login",
-  },
   session: {
-    strategy: "jwt" as SessionStrategy,
+    strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: JWT;
+      user?: Pick<User, "id" | "group" | "username" | "zipCode"> | undefined;
+    }) {
       if (user) {
         token.id = user.id;
         token.group = user.group;
@@ -98,7 +84,13 @@ export const authOptions = {
       return session;
     },
   },
+  pages: {
+    signIn: "/login",
+  },
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 const handler = NextAuth(authOptions);
+
 export { handler as GET, handler as POST };
